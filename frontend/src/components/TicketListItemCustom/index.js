@@ -70,8 +70,7 @@ const useStyles = makeStyles((theme) => ({
     alignSelf: "center",
     marginRight: 8,
     marginLeft: "auto",
-    top: "10px",
-    left: "20px",
+    right: "17px",
     borderRadius: 0,
   },
   noTicketsText: {
@@ -183,7 +182,7 @@ const useStyles = makeStyles((theme) => ({
 
   }
 }));
-  {/*PLW DESIGN INSERIDO O dentro do const handleChangeTab*/}
+  {/*INSERIDO O dentro do const handleChangeTab*/}
   const TicketListItemCustom = ({ ticket }) => {
   const classes = useStyles();
   const history = useHistory();
@@ -387,7 +386,7 @@ const useStyles = makeStyles((theme) => ({
                 marginLeft: "-3px",
                 width: "55px",
                 height: "55px",
-                borderRadius: "10%",
+                borderRadius: "50%",
               }}
               src={ticket?.contact?.profilePicUrl}
             />
@@ -398,7 +397,7 @@ const useStyles = makeStyles((theme) => ({
                 marginLeft: "0px",
                 width: "50px",
                 height: "50px",
-                borderRadius: "10%",
+                borderRadius: "50%",
               }}
               src={ticket?.contact?.profilePicUrl}
             />
@@ -500,12 +499,12 @@ const useStyles = makeStyles((theme) => ({
           {ticket.status === "pending" && (
             <ButtonWithSpinner
               //color="primary"
-              style={{ backgroundColor: 'green', color: 'white', padding: '0px', bottom: '17px', borderRadius: '0px', left: '8px', fontSize: '0.6rem' }}
+              style={{ backgroundColor: 'green', color: 'white', padding: '0px', bottom: '19px', borderRadius: '0px', left: '8px', fontSize: '0.6rem' }}
               variant="contained"
               className={classes.acceptButton}
               size="small"
               loading={loading}
-			  //PLW DESIGN INSERIDO O handleChangeTab
+			  // INSERIDO O handleChangeTab
               onClick={e => handleAcepptTicket(ticket.id)}
             >
               {i18n.t("ticketsList.buttons.accept")}

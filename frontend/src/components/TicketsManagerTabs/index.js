@@ -89,7 +89,7 @@ const useStyles = makeStyles(theme => ({
 	},
 
 	searchIcon: {
-		color: "grey",
+		color: "#e2d7f4",
 		marginLeft: 6,
 		marginRight: 6,
 		alignSelf: "center",
@@ -284,7 +284,6 @@ const TicketsManagerTabs = () => {
           <>
             <Button
               variant="outlined"
-              color="primary"
               onClick={() => setNewTicketModalOpen(true)}
             >
               {i18n.t("ticketsManager.buttons.newTicket")}

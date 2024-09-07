@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useContext } from "react";
+import React, { useState, useEffect, useReducer, useContext, useRef } from "react";
 
 import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
@@ -16,16 +16,15 @@ import WhatsAppIcon from "@material-ui/icons/WhatsApp";
 import SearchIcon from "@material-ui/icons/Search";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
-
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import EditIcon from "@material-ui/icons/Edit";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import api from "../../services/api";
 import TableRowSkeleton from "../../components/TableRowSkeleton";
 import ContactModal from "../../components/ContactModal";
 import ConfirmationModal from "../../components/ConfirmationModal/";
-
+import CancelIcon from "@material-ui/icons/Cancel";
 import { i18n } from "../../translate/i18n";
 import MainHeader from "../../components/MainHeader";
 import Title from "../../components/Title";
@@ -35,8 +34,9 @@ import toastError from "../../errors/toastError";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import { Can } from "../../components/Can";
 import NewTicketModal from "../../components/NewTicketModal";
-import { socketConnection } from "../../services/socket";
-
+import { SocketContext } from "../../context/Socket/SocketContext";
+import { generateColor } from "../../helpers/colorGenerator";
+import { getInitials } from "../../helpers/getInitials";
 import {CSVLink} from "react-csv";
 
 const reducer = (state, action) => {
@@ -108,8 +108,10 @@ const Contacts = () => {
   const [contactTicket, setContactTicket] = useState({});
   const [deletingContact, setDeletingContact] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [deletingAllContact, setDeletingAllContact] = useState(null);
   const [hasMore, setHasMore] = useState(false);
+  const fileUploadRef = useRef(null);
+
+  const socketManager = useContext(SocketContext);
 
   useEffect(() => {
     dispatch({ type: "RESET" });
@@ -138,7 +140,7 @@ const Contacts = () => {
 
   useEffect(() => {
     const companyId = localStorage.getItem("companyId");
-    const socket = socketConnection({ companyId });
+    const socket = socketManager.getSocket(companyId);
 
     socket.on(`company-${companyId}-contact`, (data) => {
       if (data.action === "update" || data.action === "create") {
@@ -153,7 +155,7 @@ const Contacts = () => {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [ socketManager]);
 
   const handleSearch = (event) => {
     setSearchParam(event.target.value.toLowerCase());
@@ -209,27 +211,44 @@ const Contacts = () => {
     setPageNumber(1);
   };
   
-    const handleDeleteAllContact = async () => {
-    try {
-      await api.delete("/contacts");
-      toast.success(i18n.t("contacts.toasts.deletedAll"));
-      history.go(0);
-    } catch (err) {
-      toastError(err);
-    }
-    setDeletingAllContact(null);
-    setSearchParam("");
-    setPageNumber();
-  };
-
   const handleimportContact = async () => {
     try {
-      await api.post("/contacts/import");
+      if (!!fileUploadRef.current.files[0]) {
+        const formData = new FormData();
+        formData.append("file", fileUploadRef.current.files[0]);
+        await api.request({
+          url: `/contacts/upload`,
+          method: "POST",
+          data: formData,
+        });
+      } else {
+        await api.post("/contacts/import");
+      }
       history.go(0);
     } catch (err) {
       toastError(err);
     }
   };
+  
+function getDateLastMessage(contact) {
+    if (!contact) return null;
+    if (!contact.tickets) return null;
+
+    if (contact.tickets.length > 0) {
+        const date = new Date(contact.tickets[contact.tickets.length - 1].updatedAt);
+
+        const day = date.getDate() > 9 ? date.getDate() : `0${date.getDate()}`;
+        const month = (date.getMonth() + 1) > 9 ? (date.getMonth() + 1) : `0${date.getMonth() + 1}`;
+        const year = date.getFullYear().toString().slice(-2);
+
+        const hours = date.getHours() > 9 ? date.getHours() : `0${date.getHours()}`;
+        const minutes = date.getMinutes() > 9 ? date.getMinutes() : `0${date.getMinutes()}`;
+
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    }
+
+    return null;
+}
 
   const loadMore = () => {
     setPageNumber((prevState) => prevState + 1);
@@ -264,7 +283,6 @@ const Contacts = () => {
             ? `${i18n.t("contacts.confirmationModal.deleteTitle")} ${
                 deletingContact.name
               }?`
-			: deletingAllContact ? `${i18n.t("contacts.confirmationModal.deleteAllTitle")}`
             : `${i18n.t("contacts.confirmationModal.importTitlte")}`
         }
         open={confirmOpen}
@@ -272,13 +290,11 @@ const Contacts = () => {
         onConfirm={(e) =>
           deletingContact
             ? handleDeleteContact(deletingContact.id)
-			: deletingAllContact ? handleDeleteAllContact(deletingAllContact)
             : handleimportContact()
         }
       >
         {deletingContact
           ? `${i18n.t("contacts.confirmationModal.deleteMessage")}`
-		  : deletingAllContact ? `${i18n.t("contacts.confirmationModal.deleteAllMessage")}`
           : `${i18n.t("contacts.confirmationModal.importMessage")}`}
       </ConfirmationModal>
       <MainHeader>
@@ -305,6 +321,16 @@ const Contacts = () => {
             {i18n.t("contacts.buttons.import")}
           </Button>
           <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            fileUploadRef.current.value = null;
+            fileUploadRef.current.click();
+          }}
+      >
+        {i18n.t("contacts.buttons.importSheet")}
+      </Button>
+          <Button
             variant="contained"
             color="primary"
             onClick={handleOpenContactModal}
@@ -316,20 +342,7 @@ const Contacts = () => {
           <Button	variant="contained" color="primary"> 
           EXPORTAR CONTATOS 
           </Button>
-          </CSVLink>
-		  
-		 <Tooltip title={i18n.t("contacts.buttons.delete")}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={(e) => {
-                      setConfirmOpen(true);
-                      setDeletingAllContact(contacts);
-                    }}
-                  >
-                    <DeleteForeverIcon />
-                  </Button>
-         </Tooltip>
+          </CSVLink>		  
 
         </MainHeaderButtonsWrapper>
       </MainHeader>
@@ -338,6 +351,19 @@ const Contacts = () => {
         variant="outlined"
         onScroll={handleScroll}
       >
+        <>
+          <input
+              style={{ display: "none" }}
+              id="upload"
+              name="file"
+              type="file"
+              accept=".xls,.xlsx"
+              onChange={() => {
+                setConfirmOpen(true);
+              }}
+              ref={fileUploadRef}
+          />
+        </>
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -350,6 +376,10 @@ const Contacts = () => {
                 {i18n.t("contacts.table.email")}
               </TableCell>
               <TableCell align="center">
+              {"Última Interação"}
+              </TableCell>
+			  <TableCell align="center">{"Status"}</TableCell>
+              <TableCell align="center">
                 {i18n.t("contacts.table.actions")}
               </TableCell>
             </TableRow>
@@ -359,11 +389,31 @@ const Contacts = () => {
               {contacts.map((contact) => (
                 <TableRow key={contact.id}>
                   <TableCell style={{ paddingRight: 0 }}>
-                    {<Avatar src={contact.profilePicUrl} />}
+                    { <Avatar
+                      style={{ backgroundColor: generateColor(contact?.number), fontWeight: "bold", color: "white" }}
+                      src={contact.profilePicUrl}>
+                      {getInitials(contact?.name)}
+                    </Avatar>}
                   </TableCell>
                   <TableCell>{contact.name}</TableCell>
                   <TableCell align="center">{contact.number}</TableCell>
                   <TableCell align="center">{contact.email}</TableCell>
+                                    <TableCell align="center">
+                                        {getDateLastMessage(contact)}
+                                    </TableCell>
+                                    <TableCell align="center">
+                                        {contact.active ? (
+                                            <CheckCircleIcon
+                                                style={{ color: "green" }}
+                                                fontSize="small"
+                                            />
+                                        ) : (
+                                            <CancelIcon
+                                                style={{ color: "red" }}
+                                                fontSize="small"
+                                            />
+                                        )}
+                                    </TableCell>
                   <TableCell align="center">
                     <IconButton
                       size="small"

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="f4ecc78b-b80f-45c3-a9d0-c69d2943023b" name="SSH Whaticket ArtHost">
+        <fileTransfer rootFolder="/home/deploy/whaticketahb" accessType="SFTP" host="65.109.160.186" port="22" sshConfigId="8b454dd6-129c-4093-ba77-ed38968455e7" sshConfig="root@65.109.160.186:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="1d5e2692-e5f6-4b51-8006-403d6c56ce50" name="SSH Whaticket Mult">
+        <fileTransfer accessType="SFTP" sshConfigId="5826d230-1829-46e0-9dee-7bc59820b283" sshConfig="SSH Whaticket Mult">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

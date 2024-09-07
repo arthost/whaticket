@@ -42,9 +42,9 @@ body {
   /* max-height: 100vh; */
 }
 .h4 {
-  caret-color: #5362f9;
-  color: #5362f9;
-  column-rule-color: #5362f9;
+  caret-color: rgb(52, 137, 255);
+  color: rgb(52, 137, 255);
+  column-rule-color: rgb(52, 137, 255);
   font-size: 34px;
   line-height: 41.99px;
   margin: 10px 0 25px;
@@ -63,7 +63,7 @@ body {
 }
 
 .img-signup {
-  background-image: url(../../assets/backgroundStep.jpg);
+  background-image: url(../../assets/backgroundStep.png);
   background-position: 50% 50%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -123,7 +123,4 @@ body {
   .img-signup {
     width: 50%;
   }
-}
-.MuiButton-containedPrimary {
-  background-color: #5362f9 !important;
 }

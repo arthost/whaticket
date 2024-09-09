@@ -2,7 +2,7 @@
 <project version="4">
   <component name="SshConfigs">
     <configs>
-      <sshConfig authType="PASSWORD" host="65.109.160.186" id="8b454dd6-129c-4093-ba77-ed38968455e7" port="22" nameFormat="DESCRIPTIVE" username="root" useOpenSSHConfig="true" />
+      <sshConfig authType="PASSWORD" host="38.242.247.228" id="8b454dd6-129c-4093-ba77-ed38968455e7" port="22" nameFormat="DESCRIPTIVE" username="root" useOpenSSHConfig="true" />
       <sshConfig authType="PASSWORD" id="5826d230-1829-46e0-9dee-7bc59820b283" customName="SSH Whaticket Mult" nameFormat="CUSTOM" useOpenSSHConfig="true">
         <option name="customName" value="SSH Whaticket Mult" />
       </sshConfig>

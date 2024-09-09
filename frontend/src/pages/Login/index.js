@@ -24,9 +24,9 @@ const useStyles = makeStyles(theme => ({
     },
     leftSide: {
         flex: 1,
-        backgroundImage: "url(https://i.imgur.com/Yu3cnE9.png)",
+        backgroundImage: "url(https://loginapi.evachat.com.br/public/logotipos/login-evachat.jpg)",
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundPosition: 'right',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -120,7 +120,7 @@ const Login = () => {
     return (
         <div className={classes.root}>
             <div className={classes.leftSide}>
-                <img style={{ margin: "0 auto", width: "80%" }} src={logoWithRandom} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} />
+                <img style={{ margin: "0 auto" }} src={logoWithRandom} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} />
             </div>
             <div className={classes.rightSide}>
                 <Container component="main" maxWidth="xs">

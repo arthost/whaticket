@@ -21,7 +21,7 @@ interface Request {
   //sendIdQueue?: number;
   //timeSendQueue?: number;
   transferQueueId?: number;
-  timeToTransfer?: number;    
+  timeToTransfer?: number;
   promptId?: number;
   maxUseBotQueues?: number;
   timeUseBotQueues?: number;
@@ -45,11 +45,11 @@ const CreateWhatsAppService = async ({
   isDefault = false,
   companyId,
   token = "",
-  provider = "beta",
+  provider = "EvaChat",
   //timeSendQueue,
   //sendIdQueue,
   transferQueueId,
-  timeToTransfer,    
+  timeToTransfer,
   promptId,
   maxUseBotQueues = 3,
   timeUseBotQueues = 0,
@@ -160,7 +160,7 @@ const CreateWhatsAppService = async ({
       //timeSendQueue,
       //sendIdQueue,
 	  transferQueueId,
-	  timeToTransfer,	  
+	  timeToTransfer,
       promptId,
       maxUseBotQueues,
       timeUseBotQueues,
